@@ -10,7 +10,16 @@ export async function GET(request, { params }) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const projectId = params.id;
+    // Robust param handling for Next.js 14/15/16
+    const resolvedParams = await params;
+    const projectId = resolvedParams?.id;
+
+    if (!projectId) {
+      return NextResponse.json({ 
+        message: 'Project ID is missing from params', 
+        debug_params: resolvedParams 
+      }, { status: 400 });
+    }
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
@@ -34,7 +43,11 @@ export async function GET(request, { params }) {
     return NextResponse.json(project, { status: 200 });
   } catch (error) {
     console.error('Fetch Project Error:', error);
-    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+    return NextResponse.json({ 
+      message: 'Internal server error', 
+      error: error.message,
+      stack: error.stack 
+    }, { status: 500 });
   }
 }
 
@@ -45,18 +58,11 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ message: 'Forbidden: Admins only' }, { status: 403 });
     }
 
-    const projectId = params.id;
+    const resolvedParams = await params;
+    const projectId = resolvedParams?.id;
 
-    // Prisma relation handles cascading deletes if configured, 
-    // but typically we should delete tasks first or rely on cascade.
-    // Let's explicitly delete tasks first for safety.
-    await prisma.task.deleteMany({
-      where: { projectId }
-    });
-
-    await prisma.project.delete({
-      where: { id: projectId }
-    });
+    await prisma.task.deleteMany({ where: { projectId } });
+    await prisma.project.delete({ where: { id: projectId } });
 
     return NextResponse.json({ message: 'Project deleted successfully' }, { status: 200 });
   } catch (error) {
