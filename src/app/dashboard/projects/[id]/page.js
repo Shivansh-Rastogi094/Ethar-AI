@@ -44,8 +44,8 @@ export default function ProjectDetailsPage({ params }) {
   };
 
   useEffect(() => {
-    if (session) fetchProjectData();
-  }, [session]);
+    if (session && projectId) fetchProjectData();
+  }, [session, projectId]);
 
   const handleCreateTask = async (e) => {
     e.preventDefault();

@@ -34,7 +34,7 @@ export async function GET(request, { params }) {
     return NextResponse.json(project, { status: 200 });
   } catch (error) {
     console.error('Fetch Project Error:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }
 
