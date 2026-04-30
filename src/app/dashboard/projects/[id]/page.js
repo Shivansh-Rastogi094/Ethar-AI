@@ -1,14 +1,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState, use } from "react";
-import { PlusCircle, Clock, AlertCircle, CheckCircle, Trash2, ArrowLeft, MoreHorizontal, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PlusCircle, Clock, AlertCircle, CheckCircle, Trash2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ProjectDetailsPage({ params }) {
-  const resolvedParams = use(params);
-  const projectId = resolvedParams.id;
+  const projectId = params.id;
   const { data: session } = useSession();
   const router = useRouter();
   
@@ -38,7 +37,7 @@ export default function ProjectDetailsPage({ params }) {
       if (usersRes.ok) setUsers(await usersRes.json());
       
     } catch (err) {
-      console.error("Fetch Project Data Error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -128,16 +127,8 @@ export default function ProjectDetailsPage({ params }) {
     { id: "DONE", title: "Done", icon: <CheckCircle size={18} color="var(--status-done)" /> }
   ];
 
-  if (loading) return <div style={{ padding: '40px', color: 'var(--text-secondary)' }}>Loading project data...</div>;
-  
-  if (!project) return (
-    <div className="glass-panel animate-slide-up" style={{ padding: '60px 20px', textAlign: 'center' }}>
-      <AlertCircle size={48} color="#ef4444" style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-      <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Project not found</h3>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>This project might have been deleted or you don't have access.</p>
-      <Link href="/dashboard/projects" className="btn-secondary">Back to Projects</Link>
-    </div>
-  );
+  if (loading) return <div>Loading...</div>;
+  if (!project) return <div>Project not found.</div>;
 
   return (
     <div className="animate-slide-up" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -148,7 +139,7 @@ export default function ProjectDetailsPage({ params }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: '800' }}>{project.name}</h1>
-            <p style={{ color: 'var(--text-secondary)' }}>{project.description || "No description provided."}</p>
+            <p style={{ color: 'var(--text-secondary)' }}>{project.description}</p>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
             {session?.user?.role === "ADMIN" && (
@@ -240,7 +231,7 @@ export default function ProjectDetailsPage({ params }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Add New Task</h2>
               <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                <X size={24} />
+                <PlusCircle style={{ transform: 'rotate(45deg)' }} size={24} />
               </button>
             </div>
             
