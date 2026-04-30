@@ -10,7 +10,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const taskId = params.id;
+    const { id: taskId } = await params; // ✅ await params (Next.js 15/16)
     const { status } = await request.json();
 
     if (!status) {
@@ -50,12 +50,11 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    // Only Admins can delete tasks
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ message: 'Forbidden: Admins only' }, { status: 403 });
     }
 
-    const taskId = params.id;
+    const { id: taskId } = await params; // ✅ await params (Next.js 15/16)
 
     await prisma.task.delete({
       where: { id: taskId }
