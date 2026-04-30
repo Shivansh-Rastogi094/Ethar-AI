@@ -1,13 +1,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState, use } from "react";
-import { PlusCircle, Clock, AlertCircle, CheckCircle, Trash2, ArrowLeft, Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PlusCircle, Clock, AlertCircle, CheckCircle, Trash2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ProjectDetailsPage({ params }) {
-  const { id: projectId } = use(params);
+  const projectId = params.id;
   const { data: session } = useSession();
   const router = useRouter();
   
